@@ -1,0 +1,39 @@
+# Arduino build files and directories
+build/
+bin/
+layout.index.xml
+*.o
+*.d
+*.elf
+*.hex
+*.bin
+
+# Python caching and environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+.pytest_cache/
+venv/
+env/
+ENV/
+.env
+
+# IDE and Editor configurations
+.vscode/
+.idea/
+*.suo
+*.sln
+*.user
+*.userossc
+*.sln.docstates
+*.swp
+*~
+
+# OS specific files
+Thumbs.db
+db.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
