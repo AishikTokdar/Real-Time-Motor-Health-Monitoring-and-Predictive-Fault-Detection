@@ -79,7 +79,7 @@ graph TD
 3.  **Output Layer:** Distributes telemetry to local outputs (OLED, LEDs, Buzzer), transmits serial status packets to the secondary Arduino-driven LCD display, and syncs data to the Blynk cloud via Wi-Fi.
 
 ### 3.2 System Flowchart
-<img width="991" height="726" alt="Execution Pipeline Flowchart" src="https://github.com/user-attachments/assets/3204f545-b034-41ad-ada1-8a1ae4ae17cd" />
+![Execution Pipeline Flowchart](Docs/flow_chart.png)
 
 ---
 
@@ -132,8 +132,8 @@ Detailed component specifications are available in the project's [BOM Spreadshee
 Real-Time-Motor-Health-Monitoring-and-Predictive-Fault-Detection/
 │
 ├── Docs/                              # Technical diagrams and project files
-│   ├── Block_Diagram.png              # System structural layout
-│   ├── Flow_Chart.png                 # Processing logic flowchart
+│   ├── block_diagram.png              # System structural layout
+│   ├── flow_chart.png                 # Processing logic flowchart
 │   └── Project_Report.pdf             # Comprehensive technical paper
 │
 ├── Firmware/                          # Main modular ESP32 firmware (v2)
@@ -167,9 +167,22 @@ Real-Time-Motor-Health-Monitoring-and-Predictive-Fault-Detection/
 │   ├── tinyml_model.pkl               # Serialized Decision Tree model
 │   └── motor_model.h                  # Exported C class representing DT
 │
-├── Images/                            # Physical wiring & setup guides
+├── Images/                            # Physical wiring & setup photo gallery
+│   ├── acs712_current_sensor_setup.jpg
+│   ├── adxl345_vibration_sensor_setup.jpg
+│   ├── ds18b20_temp_sensor_setup.jpg
+│   ├── full_system_setup.jpg
+│   ├── hardware_breadboard_setup.jpg
+│   └── motor_fan_system_setup.jpg
+│
+├── hardware/                          # Microcontroller circuit diagrams
+│   ├── Arduino_Circuit/
+│   │   └── arduino_lcd_circuit_diagram.jpeg
+│   └── ESP32_Circuit/
+│       └── esp32_breadboard_circuit_diagram.png
+│
 ├── BOM_v1.xlsx                        # Bill of Materials Spreadsheet
-├── Circuit_diagram.png                # Overall electrical connection schematic
+├── circuit_diagram.png                # Overall electrical connection schematic
 ├── LICENSE                            # MIT License
 └── README.md                          # Repository documentation
 ```
@@ -244,7 +257,7 @@ Follow this sequential, phase-by-phase guide to assemble the hardware, configure
 ---
 
 ### Phase 1: Hardware Assembly & Connections
-1. **Circuit Assembly:** Connect the sensors, displays, and output modules to the microcontrollers according to [Circuit_diagram.png](Circuit_diagram.png) and the pinout tables in **Section 4.2**.
+1. **Circuit Assembly:** Connect the sensors, displays, and output modules to the microcontrollers according to the [Circuit Diagram](circuit_diagram.png), [ESP32 Wiring Diagram](hardware/ESP32_Circuit/esp32_breadboard_circuit_diagram.png), [Arduino Wiring Diagram](hardware/Arduino_Circuit/arduino_lcd_circuit_diagram.jpeg), and pinout tables in **Section 4.2**.
 2. **Serial Interface Link:** Wire the UART serial communication bridge:
    * Connect ESP32 `GPIO25` (TX) directly to Arduino Uno `Pin 2` (RX).
    * **Crucial Ground Connection:** Run a jumper wire connecting a `GND` pin on the ESP32 to a `GND` pin on the Arduino Uno.
