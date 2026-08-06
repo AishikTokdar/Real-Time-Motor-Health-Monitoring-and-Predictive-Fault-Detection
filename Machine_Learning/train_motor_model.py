@@ -1,9 +1,15 @@
+from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
+import joblib
 
-data = pd.read_csv("dataset.txt")
+BASE_DIR = Path(__file__).resolve().parent
+dataset_path = BASE_DIR / "dataset.txt"
+model_path = BASE_DIR / "motor_fault_model.pkl"
+
+data = pd.read_csv(dataset_path)
 
 print("Dataset loaded successfully")
 print(data.head())
@@ -27,8 +33,6 @@ accuracy = accuracy_score(y_test, predictions)
 
 print("Model Accuracy:", accuracy)
 
-import joblib
-
-joblib.dump(model, "motor_fault_model.pkl")
+joblib.dump(model, model_path)
 
 print("Model saved successfully!")
