@@ -153,7 +153,8 @@ Real-Time-Motor-Health-Monitoring-and-Predictive-Fault-Detection/
 │   └── syk_oled_bitmap.h              # Bitmap assets for OLED
 │
 ├── Firmware_old/                       # Legacy single-file firmware
-│   └── Firmware_old.ino                # Monolithic ESP32 code structure
+│   ├── Firmware_old.ino                # Monolithic ESP32 code structure
+│   └── motor_model.h                  # Machine learning classifier header
 │
 ├── LCD_Display/                       # Subsystem driving the 16x2 LCD
 │   └── Arduino_LCD_Animation.ino      # Arduino Uno status display code
