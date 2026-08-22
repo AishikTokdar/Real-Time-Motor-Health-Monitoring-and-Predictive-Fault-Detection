@@ -5,7 +5,7 @@
 
 extern float offsetVoltage;
 
-void calibrateCurrentSensor()
+inline void calibrateCurrentSensor()
 {
     Serial.println("Calibrating Current Sensor...");
 

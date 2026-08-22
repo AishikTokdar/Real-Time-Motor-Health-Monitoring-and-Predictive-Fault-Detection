@@ -5,7 +5,7 @@
 
 extern int logMode;
 
-void handleSerialCommands()
+inline void handleSerialCommands()
 {
     if(Serial.available())
     {
@@ -31,7 +31,7 @@ void handleSerialCommands()
     }
 }
 
-void logDebug(
+inline void logDebug(
     float vibRMS,
     float vibMean,
     float vibStdDev,
@@ -69,7 +69,7 @@ void logDebug(
     Serial.println("===================");
 }
 
-void logInfo(float rpm, float temp, float health, String fault)
+inline void logInfo(float rpm, float temp, float health, String fault)
 {
     Serial.print("RPM:");
     Serial.print(rpm);
@@ -85,7 +85,7 @@ void logInfo(float rpm, float temp, float health, String fault)
     Serial.println(fault);
 }
 
-void logDataset(
+inline void logDataset(
     unsigned long time,
     float features[8],
     int aiPrediction,
@@ -107,7 +107,7 @@ void logDataset(
     Serial.println(fault);
 }
 
-void runLogger(
+inline void runLogger(
     float vibRMS,
     float vibMean,
     float vibStdDev,

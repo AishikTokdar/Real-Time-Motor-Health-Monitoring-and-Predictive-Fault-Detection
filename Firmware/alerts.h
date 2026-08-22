@@ -8,7 +8,7 @@ extern int warningLED;
 extern int faultLED;
 extern int buzzer;
 
-bool checkWarningState(float motorHealth)
+inline bool checkWarningState(float motorHealth)
 {
     if(motorHealth < HEALTH_WARNING_LEVEL && motorHealth >= 0)
         return true;
@@ -16,7 +16,7 @@ bool checkWarningState(float motorHealth)
     return false;
 }
 
-void updateAlerts(String fault, bool warningState)
+inline void updateAlerts(String fault, bool warningState)
 {
 
     if(fault == "STOPPED")

@@ -5,7 +5,7 @@
 
 extern float previousHealth;
 
-float computeMotorHealth(
+float inline computeMotorHealth(
     float vibStdDev,
     float currentRMS,
     float temperature)
@@ -40,7 +40,7 @@ float computeMotorHealth(
     return filteredHealth;
 }
 
-int estimateRUL(float motorHealth)
+int inline estimateRUL(float motorHealth)
 {
     int RUL = motorHealth * 1.2;
 
@@ -50,7 +50,7 @@ int estimateRUL(float motorHealth)
     return RUL;
 }
 
-String maintenanceAdvice(int RUL)
+String inline maintenanceAdvice(int RUL)
 {
     if (RUL > 80)
         return "Healthy";

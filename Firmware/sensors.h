@@ -18,7 +18,7 @@ extern float filteredRPM;
 
 extern float offsetVoltage;
 
-void IRAM_ATTR countPulse()
+void IRAM_ATTR inline countPulse()
 {
     unsigned long now = micros();
 
@@ -29,7 +29,7 @@ void IRAM_ATTR countPulse()
     }
 }
 
-float readRPM()
+float inline readRPM()
 {
     static unsigned long lastTime = 0;
 
@@ -50,13 +50,13 @@ float readRPM()
     return filteredRPM;
 }
 
-float readTemperature()
+float inline readTemperature()
 {
     tempSensor.requestTemperatures();
     return tempSensor.getTempCByIndex(0);
 }
 
-void readVibration(float &vibMean, float &vibRMS, float &vibStdDev)
+void inline readVibration(float &vibMean, float &vibRMS, float &vibStdDev)
 {
     float vibSum = 0;
     float vibSumSquares = 0;
@@ -80,7 +80,7 @@ void readVibration(float &vibMean, float &vibRMS, float &vibStdDev)
     vibStdDev = sqrt((vibSumSquares / VIBRATION_SAMPLES) - (vibMean * vibMean));
 }
 
-void readCurrent(float &currentMean, float &currentRMS, float &currentStdDev)
+void inline readCurrent(float &currentMean, float &currentRMS, float &currentStdDev)
 {
     int validSamples = 0;
 

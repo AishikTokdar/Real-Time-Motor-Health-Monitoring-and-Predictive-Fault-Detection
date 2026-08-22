@@ -25,11 +25,11 @@ extern String maintenance;
 
 extern bool alertSent;
 
-unsigned long lastWifiCheck = 0;
+extern unsigned long lastWifiCheck;
 const unsigned long wifiRetryInterval = 10000;
-bool wifiConnected = false;
+extern bool wifiConnected;
 
-void sendDataToBlynk()
+inline void sendDataToBlynk()
 {
     Blynk.virtualWrite(V0, temperature);
     Blynk.virtualWrite(V1, vibration);
@@ -47,7 +47,7 @@ void sendDataToBlynk()
     Blynk.virtualWrite(V11, maintenance);
 }
 
-void checkMotorAlert(float motorHealth)
+inline void checkMotorAlert(float motorHealth)
 {
     if (motorHealth < HEALTH_CRITICAL_LEVEL && !alertSent)
     {
@@ -61,7 +61,7 @@ void checkMotorAlert(float motorHealth)
     }
 }
 
-void manageWiFi()
+inline void manageWiFi()
 {
     if (WiFi.status() == WL_CONNECTED)
     {

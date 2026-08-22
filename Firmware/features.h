@@ -17,7 +17,7 @@ struct MotorFeatures
     float temperature;
 };
 
-void buildFeatureArray(MotorFeatures &f, float features[8])
+inline void buildFeatureArray(MotorFeatures &f, float features[8])
 {
     features[0] = f.vibRMS;
     features[1] = f.vibMean;
@@ -31,7 +31,7 @@ void buildFeatureArray(MotorFeatures &f, float features[8])
     features[7] = f.temperature;
 }
 
-void normalizeFeatures(float features[8])
+inline void normalizeFeatures(float features[8])
 {
 }
 

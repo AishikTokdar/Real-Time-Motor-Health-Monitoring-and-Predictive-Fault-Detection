@@ -9,12 +9,12 @@ extern Eloquent::ML::Port::DecisionTree model;
 extern int abnormalCount;
 extern String fault;
 
-int runAI(float features[8])
+int inline runAI(float features[8])
 {
     return model.predict(features);
 }
 
-String classifyFault(int aiPrediction)
+String inline classifyFault(int aiPrediction)
 {
     switch(aiPrediction)
     {
@@ -32,7 +32,7 @@ String classifyFault(int aiPrediction)
     }
 }
 
-String updateFaultState(int aiPrediction, float rpm)
+String inline updateFaultState(int aiPrediction, float rpm)
 {
     bool abnormal = false;
     String detectedFault = "NORMAL";
@@ -45,7 +45,7 @@ String updateFaultState(int aiPrediction, float rpm)
 
     if(rpm > 250)
     {
-        detectedFault = classifyFault(aiPrediction);
+        detectedFault = inline classifyFault(aiPrediction);
 
         if(detectedFault != "NORMAL")
             abnormal = true;

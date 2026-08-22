@@ -1,9 +1,9 @@
 #ifndef LCD_SERIAL_H
 #define LCD_SERIAL_H
 
-String lastLCDmsg = "";
+extern String lastLCDmsg;
 
-void sendLCD(String msg)
+inline void sendLCD(String msg)
 {
     if(msg != lastLCDmsg)
     {

@@ -8,7 +8,7 @@
 
 extern Adafruit_SSD1306 display;
 
-void showStartupScreen()
+inline void showStartupScreen()
 {   
     display.clearDisplay();
     display.drawBitmap(0, 0, syk_logo, 128, 64, WHITE);
@@ -39,7 +39,7 @@ void showStartupScreen()
     delay(2500);
 }
 
-void showStoppedScreen()
+inline void showStoppedScreen()
 {
     display.clearDisplay();
     display.setTextColor(WHITE);
@@ -51,7 +51,7 @@ void showStoppedScreen()
     display.display();
 }
 
-void drawHealthBar(int motorHealth)
+inline void drawHealthBar(int motorHealth)
 {
     int barWidth = map(motorHealth, 0, 100, 0, 40);
     barWidth = constrain(barWidth, 0, 40);
@@ -61,7 +61,7 @@ void drawHealthBar(int motorHealth)
     display.fillRect(80,20,barWidth,6,WHITE);
 }
 
-void displayMotorData(
+inline void displayMotorData(
         float vib_rms,
         float current_rms,
         float rpm,
