@@ -18,7 +18,7 @@ extern float filteredRPM;
 
 extern float offsetVoltage;
 
-void IRAM_ATTR inline countPulse()
+inline void IRAM_ATTR countPulse()
 {
     unsigned long now = micros();
 
@@ -29,12 +29,23 @@ void IRAM_ATTR inline countPulse()
     }
 }
 
-float inline readRPM()
+inline float readRPM()
 {
     static unsigned long lastTime = 0;
 
     unsigned long now = millis();
+
+    if (lastTime == 0)
+    {
+        lastTime = now;
+        return filteredRPM;
+    }
+
     unsigned long elapsed = now - lastTime;
+    if (elapsed == 0)
+    {
+        return filteredRPM;
+    }
 
     noInterrupts();
     unsigned long count = pulseCount;
@@ -50,13 +61,13 @@ float inline readRPM()
     return filteredRPM;
 }
 
-float inline readTemperature()
+inline float readTemperature()
 {
     tempSensor.requestTemperatures();
     return tempSensor.getTempCByIndex(0);
 }
 
-void inline readVibration(float &vibMean, float &vibRMS, float &vibStdDev)
+inline void readVibration(float &vibMean, float &vibRMS, float &vibStdDev)
 {
     float vibSum = 0;
     float vibSumSquares = 0;
@@ -77,10 +88,12 @@ void inline readVibration(float &vibMean, float &vibRMS, float &vibStdDev)
 
     vibMean = vibSum / VIBRATION_SAMPLES;
     vibRMS = sqrt(vibSumSquares / VIBRATION_SAMPLES);
-    vibStdDev = sqrt((vibSumSquares / VIBRATION_SAMPLES) - (vibMean * vibMean));
+    float vibVar = (vibSumSquares / VIBRATION_SAMPLES) - (vibMean * vibMean);
+    if (vibVar < 0.0f) vibVar = 0.0f;
+    vibStdDev = sqrt(vibVar);
 }
 
-void inline readCurrent(float &currentMean, float &currentRMS, float &currentStdDev)
+inline void readCurrent(float &currentMean, float &currentRMS, float &currentStdDev)
 {
     int validSamples = 0;
 
@@ -116,7 +129,9 @@ void inline readCurrent(float &currentMean, float &currentRMS, float &currentStd
 
     currentMean = currentSum / validSamples;
     currentRMS = sqrt(currentSumSquares / validSamples);
-    currentStdDev = sqrt((currentSumSquares / validSamples) - (currentMean * currentMean));
+    float currentVar = (currentSumSquares / validSamples) - (currentMean * currentMean);
+    if (currentVar < 0.0f) currentVar = 0.0f;
+    currentStdDev = sqrt(currentVar);
 }
 
 #endif
