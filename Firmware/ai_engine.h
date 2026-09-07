@@ -9,12 +9,12 @@ extern Eloquent::ML::Port::DecisionTree model;
 extern int abnormalCount;
 extern String fault;
 
-int inline runAI(float features[8])
+inline int runAI(float features[8])
 {
     return model.predict(features);
 }
 
-String inline classifyFault(int aiPrediction)
+inline String classifyFault(int aiPrediction)
 {
     switch(aiPrediction)
     {
@@ -27,12 +27,15 @@ String inline classifyFault(int aiPrediction)
         case 2:
             return "OVERHEAT";
 
+        case 3:
+            return "STOPPED";
+
         default:
             return "NORMAL";
     }
 }
 
-String inline updateFaultState(int aiPrediction, float rpm)
+inline String updateFaultState(int aiPrediction, float rpm)
 {
     bool abnormal = false;
     String detectedFault = "NORMAL";
@@ -43,11 +46,11 @@ String inline updateFaultState(int aiPrediction, float rpm)
         return "STOPPED";
     }
 
-    if(rpm > 250)
+    if(rpm >= RPM_MIN_VALID)
     {
-        detectedFault = inline classifyFault(aiPrediction);
+        detectedFault = classifyFault(aiPrediction);
 
-        if(detectedFault != "NORMAL")
+        if(detectedFault != "NORMAL" && detectedFault != "STOPPED")
             abnormal = true;
     }
 
