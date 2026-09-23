@@ -55,6 +55,10 @@ bool alertSent = false;
 
 int logMode = LOG_DEBUG;
 
+unsigned long lastWifiCheck = 0;
+bool wifiConnected = false;
+String lastLCDmsg = "";
+
 float vibMean, vibRMS, vibStdDev;
 float currentMean, currentRMS, currentStdDev;
 
@@ -109,89 +113,82 @@ void setup()
 
 void loop()
 {
-  
-    
+    manageWiFi();
+
     if (wifiConnected)
     {
        Blynk.run();
     }
     timer.run();
 
-        readVibration(vibMean, vibRMS, vibStdDev);
-        readCurrent(currentMean, currentRMS, currentStdDev);
+    readVibration(vibMean, vibRMS, vibStdDev);
+    readCurrent(currentMean, currentRMS, currentStdDev);
 
-        rpm = readRPM();
-        tempC = readTemperature();
-       
+    rpm = readRPM();
+    tempC = readTemperature();
 
-        f.vibRMS = vibRMS;
-        f.vibMean = vibMean;
-        f.vibStdDev = vibStdDev;
+    f.vibRMS = vibRMS;
+    f.vibMean = vibMean;
+    f.vibStdDev = vibStdDev;
 
-        f.currentRMS = currentRMS;
-        f.currentMean = currentMean;
-        f.currentStdDev = currentStdDev;
+    f.currentRMS = currentRMS;
+    f.currentMean = currentMean;
+    f.currentStdDev = currentStdDev;
 
-        f.rpm = rpm;
-        f.temperature = tempC;
+    f.rpm = rpm;
+    f.temperature = tempC;
 
-        buildFeatureArray(f, features);
+    buildFeatureArray(f, features);
 
-        aiPrediction = runAI(features);
-        fault = updateFaultState(aiPrediction, rpm);
+    aiPrediction = runAI(features);
+    fault = updateFaultState(aiPrediction, rpm);
 
-        motorHealth = computeMotorHealth(vibStdDev, currentRMS, tempC);
+    motorHealth = computeMotorHealth(vibStdDev, currentRMS, tempC);
 
-        RUL = estimateRUL(motorHealth);
-        maintenance = maintenanceAdvice(RUL);
+    RUL = estimateRUL(motorHealth);
+    maintenance = maintenanceAdvice(RUL);
 
-        bool warningState = checkWarningState(motorHealth);
-        updateAlerts(fault, warningState);
+    bool warningState = checkWarningState(motorHealth);
+    updateAlerts(fault, warningState);
 
-       if(fault == "STOPPED")
-            showStoppedScreen();
-       else
-            displayMotorData(vibRMS, currentRMS, rpm, tempC, motorHealth, fault);
+    if(fault == "STOPPED")
+        showStoppedScreen();
+    else
+        displayMotorData(vibRMS, currentRMS, rpm, tempC, motorHealth, fault);
 
-       temperature = tempC;
-       vibration = vibRMS;
-       current = currentRMS;
-       Rpm = rpm;
-       motorhealth = motorHealth;
+    temperature = tempC;
+    vibration = vibRMS;
+    current = currentRMS;
+    Rpm = rpm;
+    motorhealth = motorHealth;
 
-       checkMotorAlert(motorHealth);
+    checkMotorAlert(motorHealth);
 
-       if(motorHealth < 30 )
-            sendLCD("MAINTENANCE!");
+    if(motorHealth < 30)
+        sendLCD("MAINTENANCE!");
+    else if(fault == "UNBALANCE")
+        sendLCD("FAULT:UNBALANCE");
+    else if(fault == "OVERCURRENT")
+        sendLCD("FAULT:OVERCURRENT");
+    else if(fault == "OVERHEAT")
+        sendLCD("FAULT:OVERHEAT");
+    else if(fault == "STOPPED")
+        sendLCD("STATUS:STOPPED");
+    else
+        sendLCD("STATUS:NORMAL");
 
-       else if(fault == "UNBALANCE")
-            sendLCD("FAULT:UNBALANCE");
-
-       else if(fault == "OVERCURRENT")
-            sendLCD("FAULT:OVERCURRENT");
-
-       else if(fault == "OVERHEAT")
-            sendLCD("FAULT:OVERHEAT");
-
-       else if(fault == "STOPPED")
-            sendLCD("STATUS:STOPPED");
-
-       else
-            sendLCD("STATUS:NORMAL");
-
-        runLogger(
-            vibRMS,
-            vibMean,
-            vibStdDev,
-            currentRMS,
-            currentMean,
-            currentStdDev,
-            rpm,
-            tempC,
-            motorHealth,
-            aiPrediction,
-            features,
-            fault
-        );
-
+    runLogger(
+        vibRMS,
+        vibMean,
+        vibStdDev,
+        currentRMS,
+        currentMean,
+        currentStdDev,
+        rpm,
+        tempC,
+        motorHealth,
+        aiPrediction,
+        features,
+        fault
+    );
 }
