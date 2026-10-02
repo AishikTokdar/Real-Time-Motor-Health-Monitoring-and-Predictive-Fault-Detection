@@ -5,15 +5,15 @@
 
 extern float previousHealth;
 
-float inline computeMotorHealth(
+inline float computeMotorHealth(
     float vibStdDev,
     float currentRMS,
     float temperature)
 {
 
-    float vibRatio = vibStdDev / VIBRATION_THRESHOLD;
-    float currentRatio = currentRMS / CURRENT_THRESHOLD;
-    float tempRatio = temperature / TEMPERATURE_THRESHOLD;
+    float vibRatio = (VIBRATION_THRESHOLD > 0) ? (vibStdDev / VIBRATION_THRESHOLD) : 0;
+    float currentRatio = (CURRENT_THRESHOLD > 0) ? (currentRMS / CURRENT_THRESHOLD) : 0;
+    float tempRatio = (TEMPERATURE_THRESHOLD > 0) ? (temperature / TEMPERATURE_THRESHOLD) : 0;
 
     float vibStress = 0;
     float currentStress = 0;
@@ -40,17 +40,19 @@ float inline computeMotorHealth(
     return filteredHealth;
 }
 
-int inline estimateRUL(float motorHealth)
+inline int estimateRUL(float motorHealth)
 {
     int RUL = motorHealth * 1.2;
 
     if(RUL > 100)
         RUL = 100;
+    if(RUL < 0)
+        RUL = 0;
 
     return RUL;
 }
 
-String inline maintenanceAdvice(int RUL)
+inline String maintenanceAdvice(int RUL)
 {
     if (RUL > 80)
         return "Healthy";
