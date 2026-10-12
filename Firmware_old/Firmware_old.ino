@@ -100,109 +100,105 @@ void displayData()
   display.clearDisplay();
   display.setTextColor(WHITE);
 
-  if(fault == "STOPPED")
+  if (fault == "STOPPED")
   {
-  display.setTextSize(2);
-  display.setCursor(10,20);
-  display.println("STOPPED");
-  sendLCD("STATUS:STOPPED");
-
-  digitalWrite(BUZZER_PIN, LOW);
+    display.setTextSize(2);
+    display.setCursor(10, 20);
+    display.println("STOPPED");
+    sendLCD("STATUS:STOPPED");
+    digitalWrite(BUZZER_PIN, LOW);
   }
-  else {
-  display.setTextSize(1);
+  else
+  {
+    display.setTextSize(1);
 
-    display.setCursor(0,0);
+    display.setCursor(0, 0);
     display.println("Motor Data Monitor");
 
-    display.setCursor(0,12);
+    display.setCursor(0, 12);
     display.print("VIB: ");
     display.println(vib_rms);
 
-    display.setCursor(0,22);
+    display.setCursor(0, 22);
     display.print("CUR: ");
     display.println(current_rms);
 
-    display.setCursor(0,32);
+    display.setCursor(0, 32);
     display.print("RPM: ");
     display.println((int)rpm);
 
-    display.setCursor(0,42);
+    display.setCursor(0, 42);
     display.print("TEMP: ");
     display.print(tempC);
     display.println("`C");
 
-    display.setCursor(80,12);
+    display.setCursor(80, 12);
     display.print("HLT:");
     display.print((int)motorHealth);
     display.println("%");
-    int barWidth = map(motorHealth, 0, 100, 0, 40);  
+
+    int barWidth = map(motorHealth, 0, 100, 0, 40);
     barWidth = constrain(barWidth, 0, 40);
-    display.fillRect(80,20,40,6,BLACK);
+    display.fillRect(80, 20, 40, 6, BLACK);
     display.drawRect(80, 20, 40, 6, WHITE);
     display.fillRect(80, 20, barWidth, 6, WHITE);
-  
-    if(fault == "NORMAL")
+
+    if (fault == "NORMAL")
     {
-      display.setCursor(0,54);
+      display.setCursor(0, 54);
       display.println("STATUS: NORMAL");
-
       digitalWrite(BUZZER_PIN, LOW);
-      
     }
-
     else
     {
+      display.setTextSize(1);
+      display.setCursor(0, 54);
+      display.print("STATUS: ");
+      display.println(fault);
 
-  display.setTextSize(1);
-  display.setCursor(0,54);
-  display.print("STATUS: ");
-  display.println(fault);
-  
-  digitalWrite(BUZZER_PIN, HIGH);
-  digitalWrite(LED_NORMAL, LOW);
-  digitalWrite(LED_WARNING, LOW);
-  digitalWrite(LED_FAULT, HIGH);
-  
-}
-}
+      digitalWrite(BUZZER_PIN, HIGH);
+      digitalWrite(LED_NORMAL, LOW);
+      digitalWrite(LED_WARNING, LOW);
+      digitalWrite(LED_FAULT, HIGH);
+    }
+  }
 
   display.display();
 }
+
 void sendLCD(String msg)
 {
-  if(msg != lastLCDmsg)
+  if (msg != lastLCDmsg)
   {
     Serial2.println(msg);
     lastLCDmsg = msg;
   }
 }
 
-void sendDataToBlynk() {
-    
-    Blynk.virtualWrite(V0, temperature);
-    Blynk.virtualWrite(V1, vibration);
-    Blynk.virtualWrite(V2, current);
-    Blynk.virtualWrite(V3, motorhealth);
-    Blynk.virtualWrite(V4, fault);
-    Blynk.virtualWrite(V5, Rpm);
-    Blynk.virtualWrite(V6, normalLED);
-    Blynk.virtualWrite(V7, warningLED);
-    Blynk.virtualWrite(V8, faultLED);
-    Blynk.virtualWrite(V9, buzzer);
-    Blynk.virtualWrite(V10, RUL);
-    Blynk.virtualWrite(V11, maintenance);
+void sendDataToBlynk()
+{
+  Blynk.virtualWrite(V0, temperature);
+  Blynk.virtualWrite(V1, vibration);
+  Blynk.virtualWrite(V2, current);
+  Blynk.virtualWrite(V3, motorhealth);
+  Blynk.virtualWrite(V4, fault);
+  Blynk.virtualWrite(V5, Rpm);
+  Blynk.virtualWrite(V6, normalLED);
+  Blynk.virtualWrite(V7, warningLED);
+  Blynk.virtualWrite(V8, faultLED);
+  Blynk.virtualWrite(V9, buzzer);
+  Blynk.virtualWrite(V10, RUL);
+  Blynk.virtualWrite(V11, maintenance);
 }
 
 void setup()
-{ 
+{
   Serial.begin(115200);
   Serial2.begin(9600, SERIAL_8N1, -1, 25);
 
-  Wire.begin(21,22);
+  Wire.begin(21, 22);
 
   sendLCD("WIFI:CONNECTING");
-
   WiFi.begin(ssid, pass);
 
   while (WiFi.status() != WL_CONNECTED)
@@ -216,7 +212,7 @@ void setup()
   Blynk.begin(auth, ssid, pass);
   sendLCD("Blynk:ONLINE");
   timer.setInterval(2000L, sendDataToBlynk);
-  
+
   pinMode(LED_NORMAL, OUTPUT);
   pinMode(LED_WARNING, OUTPUT);
   pinMode(LED_FAULT, OUTPUT);
@@ -225,14 +221,13 @@ void setup()
   digitalWrite(LED_WARNING, LOW);
   digitalWrite(LED_FAULT, LOW);
 
-  if(!accel.begin())
+  if (!accel.begin())
   {
-     Serial.println("ADXL345 not detected");
-     while(1);
+    Serial.println("ADXL345 not detected");
+    while (1);
   }
 
   accel.setRange(ADXL345_RANGE_2_G);
-
   tempSensor.begin();
 
   pinMode(IR_PIN, INPUT);
@@ -242,14 +237,13 @@ void setup()
   analogSetPinAttenuation(CURRENT_PIN, ADC_11db);
 
   float sum = 0;
-
   for (int i = 0; i < 500; i++)
   {
     sum += (analogRead(CURRENT_PIN) * 3.3) / 4095.0;
     delay(2);
   }
-
   offsetVoltage = sum / 500.0;
+
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.clearDisplay();
   display.display();
@@ -259,25 +253,20 @@ void setup()
 
   display.clearDisplay();
   display.setTextColor(WHITE);
-
   display.setTextSize(1);
-  display.setCursor(0,10);
+  display.setCursor(0, 10);
   display.println("Edge AI Based");
-
-  display.setCursor(0,18);
+  display.setCursor(0, 18);
   display.println("Motor Health");
-
-  display.setTextSize(1);
-  display.setCursor(0,28);
+  display.setCursor(0, 28);
   display.println("Monitoring");
-  display.setCursor(0,38);
+  display.setCursor(0, 38);
   display.println("System - v1.26");
-  display.setCursor(0,48);
+  display.setCursor(0, 48);
   display.println("Starting...");
   display.display();
 
   delay(2500);
-    
 }
 void loop()
 {
@@ -531,6 +520,7 @@ if(filteredRPM > 250)
     rpm = filteredRPM;
 
     displayData();
+
     temperature = tempC;
     vibration = vibRMS;
     current = currentRMS;
@@ -538,82 +528,79 @@ if(filteredRPM > 250)
     motorhealth = motorHealth;
 
     if (motorHealth < 30 && !alertSent)
-      {
-        Blynk.logEvent("motor_fault", "Motor health critical! Maintenance required.");
-        Serial2.println("MAINT:ALERT");
-        alertSent = true;
-      }
+    {
+      Blynk.logEvent("motor_fault", "Motor health critical! Maintenance required.");
+      Serial2.println("MAINT:ALERT");
+      alertSent = true;
+    }
 
     if (motorHealth > 40)
+    {
+      alertSent = false;
+    }
+
+    if (Serial.available())
+    {
+      char cmd = Serial.read();
+      if (cmd == 'd')
       {
-        alertSent = false;
+        logMode = LOG_DEBUG;
+        Serial.println("Switched to DEBUG mode");
       }
- 
-    if(Serial.available())
-{
-   char cmd = Serial.read();
+      else if (cmd == 'i')
+      {
+        logMode = LOG_INFO;
+        Serial.println("Switched to INFO mode");
+      }
+      else if (cmd == 'c')
+      {
+        logMode = LOG_DATASET;
+        Serial.println("Switched to DATASET mode");
+      }
+    }
 
-   if(cmd == 'd')
-   {
-      logMode = LOG_DEBUG;
-      Serial.println("Switched to DEBUG mode");
-   }
-   else if(cmd == 'i')
-   {
-      logMode = LOG_INFO;
-      Serial.println("Switched to INFO mode");
-   }
-   else if(cmd == 'c')
-   {
-      logMode = LOG_DATASET;
-      Serial.println("Switched to DATASET mode");
-   }
-}
-    
-    if(logMode == LOG_DEBUG)
-{
-   Serial.println("\n====== DEBUG ======");
-   Serial.print("VibRMS: "); Serial.println(vibRMS); 
-   Serial.print("Vibmean: "); Serial.println(vibMean);
-   Serial.print("VibStdDev: "); Serial.println(vibStdDev); 
-   Serial.print("CurrentRMS: "); Serial.println(currentRMS); 
-   Serial.print("Current Mean: "); Serial.println(currentMean); 
-   Serial.print("CurrentStdDev: "); Serial.println(currentStdDev);
-   Serial.print("RPM: "); Serial.println(filteredRPM);
-   Serial.print("Temp: "); Serial.println(tempC);
-   Serial.print("AI Class: "); Serial.println(aiPrediction);
-   Serial.print("Status: "); Serial.println(fault);
-   Serial.print("LCD_Status: "); Serial.println(currentStatus);
-   Serial.print("Health: "); Serial.print(motorHealth); Serial.println("%");
-   Serial.println("===================");
-}
-
-else if(logMode == LOG_INFO)
-{
-   Serial.print("RPM:");
-   Serial.print(filteredRPM);
-   Serial.print(" | Temp:");
-   Serial.print(tempC);
-   Serial.print(" | Health:");
-   Serial.print(motorHealth);
-   Serial.print("%");
-   Serial.print(" | Status:");
-   Serial.println(fault);
-}
-
-else if(logMode == LOG_DATASET)
-{
-   Serial.print(millis()); Serial.print(",");
-   Serial.print(features[0]); Serial.print(",");
-   Serial.print(features[1]); Serial.print(",");
-   Serial.print(features[2]); Serial.print(",");
-   Serial.print(features[3]); Serial.print(",");
-   Serial.print(features[4]); Serial.print(",");
-   Serial.print(features[5]); Serial.print(",");
-   Serial.print(features[6]); Serial.print(",");
-   Serial.print(features[7]); Serial.print(",");
-   Serial.print(aiPrediction); Serial.print(",");
-   Serial.println(fault);
-}
+    if (logMode == LOG_DEBUG)
+    {
+      Serial.println("\n====== DEBUG ======");
+      Serial.print("VibRMS: "); Serial.println(vibRMS);
+      Serial.print("Vibmean: "); Serial.println(vibMean);
+      Serial.print("VibStdDev: "); Serial.println(vibStdDev);
+      Serial.print("CurrentRMS: "); Serial.println(currentRMS);
+      Serial.print("Current Mean: "); Serial.println(currentMean);
+      Serial.print("CurrentStdDev: "); Serial.println(currentStdDev);
+      Serial.print("RPM: "); Serial.println(filteredRPM);
+      Serial.print("Temp: "); Serial.println(tempC);
+      Serial.print("AI Class: "); Serial.println(aiPrediction);
+      Serial.print("Status: "); Serial.println(fault);
+      Serial.print("LCD_Status: "); Serial.println(currentStatus);
+      Serial.print("Health: "); Serial.print(motorHealth); Serial.println("%");
+      Serial.println("===================");
+    }
+    else if (logMode == LOG_INFO)
+    {
+      Serial.print("RPM:");
+      Serial.print(filteredRPM);
+      Serial.print(" | Temp:");
+      Serial.print(tempC);
+      Serial.print(" | Health:");
+      Serial.print(motorHealth);
+      Serial.print("%");
+      Serial.print(" | Status:");
+      Serial.println(fault);
+    }
+    else if (logMode == LOG_DATASET)
+    {
+      Serial.print(millis()); Serial.print(",");
+      Serial.print(features[0]); Serial.print(",");
+      Serial.print(features[1]); Serial.print(",");
+      Serial.print(features[2]); Serial.print(",");
+      Serial.print(features[3]); Serial.print(",");
+      Serial.print(features[4]); Serial.print(",");
+      Serial.print(features[5]); Serial.print(",");
+      Serial.print(features[6]); Serial.print(",");
+      Serial.print(features[7]); Serial.print(",");
+      Serial.print(aiPrediction); Serial.print(",");
+      Serial.println(fault);
+    }
   }
 }
