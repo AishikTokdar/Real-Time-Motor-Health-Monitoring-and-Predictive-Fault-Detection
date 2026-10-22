@@ -32,6 +32,8 @@ volatile unsigned long lastPulseTime = 0;
 float filteredRPM = 0;
 float previousHealth = 100;
 float offsetVoltage = ACS712_OFFSET;
+float vibBaseline = 0.0f;
+float tempOffset = 0.0f;
 
 int abnormalCount = 0;
 String fault = "NORMAL";

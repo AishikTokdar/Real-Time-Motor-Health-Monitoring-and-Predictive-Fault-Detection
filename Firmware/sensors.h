@@ -17,6 +17,8 @@ extern volatile unsigned long lastPulseTime;
 extern float filteredRPM;
 
 extern float offsetVoltage;
+extern float vibBaseline;
+extern float tempOffset;
 
 inline void IRAM_ATTR countPulse()
 {
@@ -64,7 +66,7 @@ inline float readRPM()
 inline float readTemperature()
 {
     tempSensor.requestTemperatures();
-    return tempSensor.getTempCByIndex(0);
+    return tempSensor.getTempCByIndex(0) + tempOffset;
 }
 
 inline void readVibration(float &vibMean, float &vibRMS, float &vibStdDev)
@@ -86,9 +88,10 @@ inline void readVibration(float &vibMean, float &vibRMS, float &vibStdDev)
         vibSumSquares += magnitude * magnitude;
     }
 
-    vibMean = vibSum / VIBRATION_SAMPLES;
+    float rawMean = vibSum / VIBRATION_SAMPLES;
+    vibMean = (rawMean > vibBaseline) ? (rawMean - vibBaseline) : 0.0f;
     vibRMS = sqrt(vibSumSquares / VIBRATION_SAMPLES);
-    float vibVar = (vibSumSquares / VIBRATION_SAMPLES) - (vibMean * vibMean);
+    float vibVar = (vibSumSquares / VIBRATION_SAMPLES) - (rawMean * rawMean);
     if (vibVar < 0.0f) vibVar = 0.0f;
     vibStdDev = sqrt(vibVar);
 }
