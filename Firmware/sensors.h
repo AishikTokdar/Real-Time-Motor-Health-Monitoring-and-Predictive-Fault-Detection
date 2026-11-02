@@ -19,12 +19,13 @@ extern float filteredRPM;
 extern float offsetVoltage;
 extern float vibBaseline;
 extern float tempOffset;
+extern unsigned long rpmDebounceUs;
 
 inline void IRAM_ATTR countPulse()
 {
     unsigned long now = micros();
 
-    if (now - lastPulseTime > 10000)
+    if (now - lastPulseTime > rpmDebounceUs)
     {
         pulseCount++;
         lastPulseTime = now;

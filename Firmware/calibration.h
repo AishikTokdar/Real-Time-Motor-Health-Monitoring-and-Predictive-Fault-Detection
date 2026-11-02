@@ -6,6 +6,7 @@
 extern float offsetVoltage;
 extern float vibBaseline;
 extern float tempOffset;
+extern unsigned long rpmDebounceUs;
 
 inline void calibrateCurrentSensor()
 {
@@ -51,6 +52,13 @@ inline void calibrateTemperatureOffset(float offset)
     tempOffset = offset;
     Serial.print("Temperature Offset Set To: ");
     Serial.println(tempOffset);
+}
+
+inline void calibrateRPMTiming(unsigned long debounceUs)
+{
+    rpmDebounceUs = debounceUs;
+    Serial.print("RPM Timing Debounce (us): ");
+    Serial.println(rpmDebounceUs);
 }
 
 #endif

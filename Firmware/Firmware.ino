@@ -34,6 +34,7 @@ float previousHealth = 100;
 float offsetVoltage = ACS712_OFFSET;
 float vibBaseline = 0.0f;
 float tempOffset = 0.0f;
+unsigned long rpmDebounceUs = 10000;
 
 int abnormalCount = 0;
 String fault = "NORMAL";
