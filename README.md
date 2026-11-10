@@ -249,6 +249,14 @@ $$\text{RUL} = f(H) = \text{clamp}\left(1.25 \cdot (H - 20), 0, 100\right)$$
 *   **30% < RUL <= 80%:** Moderate degradation; scheduled maintenance advised.
 *   **RUL <= 30%:** Severe degradation / Active failure; immediate shutdown and service required.
 
+### 7.3 Multi-Sensor Calibration Routines
+To eliminate zero-point drift, ambient noise, and environmental offsets before motor operation, the system provides modular calibration functions (`calibration.h`):
+
+*   **ACS712 Current Offset Calibration (`calibrateCurrentSensor()`):** Samples 500 zero-current ADC readings to measure the true sensor output voltage offset ($V_{\text{offset}}$), removing phantom current readings when the motor is OFF.
+*   **ADXL345 Vibration Baseline Calibration (`calibrateVibrationBaseline()`):** Samples 100 resting acceleration measurements to determine ambient mechanical background noise ($\text{Vib}_{\text{baseline}}$), ensuring true vibration measurements start from zero.
+*   **DS18B20 Temperature Offset Correction (`calibrateTemperatureOffset()`):** Configures a temperature offset factor ($\text{Temp}_{\text{offset}}$ in °C) to adjust for sensor thermal coupling or probe placement offsets.
+*   **IR RPM Timing Calibration (`calibrateRPMTiming()`):** Sets the pulse interrupt microsecond debounce window ($\text{Debounce}_{\text{us}}$) to filter out optical reflection jitter and electrical noise on the tachometer pin.
+
 ---
 
 ## 8. Setup & Deployment Guide
@@ -449,13 +457,36 @@ To verify the Decision Tree classifier is functioning:
 
 ## 10. Project Media
 
-### 10.1 Hardware Setup & Prototype
-![Physical System Connection Setup](https://github.com/user-attachments/assets/094b40ae-7b13-4905-9de2-0717695745e6)
+### 10.1 System Architecture & Diagrams
+| System Structural Block Diagram | Execution Pipeline Flowchart |
+| :---: | :---: |
+| ![Block Diagram](Docs/block_diagram.png) | ![Flow Chart](Docs/flow_chart.png) |
 
-*Detailed prototype assembly:*
-![Hardware Prototype close-up](https://github.com/user-attachments/assets/e65a565a-1b4c-45c5-b31e-f223d6ebbf5c)
+### 10.2 Electrical Schematics & Circuit Diagrams
+* **Overall Circuit Schematic:** [circuit_diagram.png](circuit_diagram.png)
+  ![Overall Circuit Diagram](circuit_diagram.png)
 
-### 10.2 IoT Remote Telemetry Dashboard
+* **ESP32 Breadboard Circuit Diagram:** [hardware/ESP32_Circuit/esp32_breadboard_circuit_diagram.png](hardware/ESP32_Circuit/esp32_breadboard_circuit_diagram.png)
+  ![ESP32 Breadboard Circuit Diagram](hardware/ESP32_Circuit/esp32_breadboard_circuit_diagram.png)
+
+* **Arduino LCD Subsystem Circuit Diagram:** [hardware/Arduino_Circuit/arduino_lcd_circuit_diagram.jpeg](hardware/Arduino_Circuit/arduino_lcd_circuit_diagram.jpeg)
+  ![Arduino LCD Circuit Diagram](hardware/Arduino_Circuit/arduino_lcd_circuit_diagram.jpeg)
+
+### 10.3 Physical System & Hardware Prototype Setup
+| Full Benchtop Monitoring Setup | Motor & Fan Assembly Setup |
+| :---: | :---: |
+| ![Full System Setup](Images/full_system_setup.jpg) | ![Motor Fan System Setup](Images/motor_fan_system_setup.jpg) |
+
+| Hardware Breadboard & Displays |
+| :---: |
+| ![Hardware Breadboard Setup](Images/hardware_breadboard_setup.jpg) |
+
+### 10.4 Sensor Mounting Details
+| ADXL345 Vibration Sensor | DS18B20 Temperature Sensor | ACS712 Current Sensor |
+| :---: | :---: | :---: |
+| ![ADXL345 Setup](Images/adxl345_vibration_sensor_setup.jpg) | ![DS18B20 Setup](Images/ds18b20_temp_sensor_setup.jpg) | ![ACS712 Setup](Images/acs712_current_sensor_setup.jpg) |
+
+### 10.5 IoT Remote Telemetry Dashboard
 The dashboard displays continuous streams of temperature, current draw, and vibration profiles alongside live alerts.
 
 <p align="center">
