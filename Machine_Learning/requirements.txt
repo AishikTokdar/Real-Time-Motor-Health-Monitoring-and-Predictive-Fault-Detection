@@ -1,0 +1,6 @@
+# Matches the version used to serialize the checked-in models.
+scikit-learn==1.8.0
+pandas>=2.2,<4
+numpy>=1.24,<3
+joblib>=1.4,<2
+micromlgen==1.1.28
