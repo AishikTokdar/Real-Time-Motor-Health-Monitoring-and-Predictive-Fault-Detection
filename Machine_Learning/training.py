@@ -70,7 +70,9 @@ def evaluate(model, data, splits, title, use_synthetic=False):
         if missing:
             print(f"Fold {fold}: no training examples for {missing}; independent class coverage is insufficient")
         weights = training_weights(training)
-                    training, weights = augment_training(training, weights)
+        if use_synthetic:
+            from generate_synthetic_data import augment_training
+            training, weights = augment_training(training, weights)
         candidate = clone(model)
         candidate.fit(training[FEATURES], training.status, sample_weight=weights)
         values = candidate.predict(data[FEATURES].iloc[test])
@@ -103,7 +105,23 @@ def train_and_save(model, model_path, dataset_path=None, use_synthetic=False):
     splits = list(splitter.split(data[FEATURES], data.status, groups=blocks))
     coverage = data.assign(block=blocks).groupby("status").agg(samples=("status", "size"), blocks=("block", "nunique"))
     print("Class/time-block concentration:\n", coverage.to_string())
-            fitting, weights = augment_training(data, weights)
+    if use_synthetic:
+        print("Synthetic augmentation enabled: rule-based priors, not independent recordings.")
+        print("Synthetic rows are generated inside training folds only; evaluation uses real held-out rows only.")
+    grouped = evaluate(model, data, splits, "Grouped time-block stress test (includes unseen operating ranges)", use_synthetic)
+    if data.status.value_counts().min() < 5:
+        raise ValueError("Need at least five distinct sensor vectors per class for stratified evaluation")
+    diagnostic = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    stratified = evaluate(model, data, diagnostic.split(data[FEATURES], data.status),
+                          "Stratified distinct-vector diagnostic (nearby samples may be correlated)", use_synthetic)
+    print("Time blocks reduce leakage; independent motor/session validation is still required.")
+    weights = training_weights(data)
+    print("Effective training weight by class:",
+          {label: round(float(weights[data.status.to_numpy() == label].sum()), 3) for label in CLASSES})
+    fitting = data
+    if use_synthetic:
+        from generate_synthetic_data import augment_training
+        fitting, weights = augment_training(data, weights)
     model.fit(fitting[FEATURES], fitting.status, sample_weight=weights)
     model.training_metadata_ = {
         "dataset_sha256": hashlib.sha256(dataset_path.read_bytes()).hexdigest(),
