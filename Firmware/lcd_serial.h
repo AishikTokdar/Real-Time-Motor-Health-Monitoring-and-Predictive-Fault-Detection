@@ -5,10 +5,12 @@ extern String lastLCDmsg;
 
 inline void sendLCD(String msg)
 {
-    if(msg != lastLCDmsg)
+    static unsigned long lastSent = 0;
+    if(msg != lastLCDmsg || millis() - lastSent >= LCD_HEARTBEAT_MS)
     {
         Serial2.println(msg);
         lastLCDmsg = msg;
+        lastSent = millis();
     }
 }
 
