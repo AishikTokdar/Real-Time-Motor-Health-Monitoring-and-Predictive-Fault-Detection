@@ -9,7 +9,7 @@
 extern Adafruit_SSD1306 display;
 
 inline void showStartupScreen()
-{   
+{
     display.clearDisplay();
     display.drawBitmap(0, 0, syk_logo, 128, 64, WHITE);
     display.display();
@@ -35,8 +35,19 @@ inline void showStartupScreen()
     display.println("Starting...");
 
     display.display();
-
     delay(2500);
+}
+
+inline void showSensorErrorScreen()
+{
+    display.clearDisplay();
+    display.setTextColor(WHITE);
+    display.setTextSize(1);
+    display.setCursor(0, 16);
+    display.println("SENSOR ERROR");
+    display.setCursor(0, 32);
+    display.println("Check sensors/wiring");
+    display.display();
 }
 
 inline void showStoppedScreen()
@@ -69,7 +80,6 @@ inline void displayMotorData(
         int motorHealth,
         String fault)
 {
-
     display.clearDisplay();
     display.setTextColor(WHITE);
     display.setTextSize(1);
@@ -102,7 +112,7 @@ inline void displayMotorData(
     drawHealthBar(motorHealth);
 
     display.setCursor(0,54);
-    display.print("STATUS: ");
+    display.print("ST: ");
     display.println(fault);
 
     display.display();

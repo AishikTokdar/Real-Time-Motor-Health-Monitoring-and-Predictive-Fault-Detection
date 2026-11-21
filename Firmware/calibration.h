@@ -7,20 +7,28 @@ extern float offsetVoltage;
 extern float vibBaseline;
 extern float tempOffset;
 extern unsigned long rpmDebounceUs;
+extern bool currentCalibrationValid;
 
 inline void calibrateCurrentSensor()
 {
     Serial.println("Calibrating Current Sensor...");
 
     float sum = 0;
+    currentCalibrationValid = false;
     for (int i = 0; i < 500; i++)
     {
-        float voltage = (analogRead(CURRENT_PIN) * 3.3) / 4095.0;
+        int adc = analogRead(CURRENT_PIN);
+        if (adc < 10 || adc > 4000) {
+            Serial.println("Current calibration failed: ADC at rail");
+            return;
+        }
+        float voltage = (adc * 3.3) / 4095.0;
         sum += voltage;
         delay(2);
     }
 
     offsetVoltage = sum / 500.0;
+    currentCalibrationValid = true;
     Serial.print("Current Offset Voltage: ");
     Serial.println(offsetVoltage);
 }

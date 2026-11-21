@@ -4,6 +4,7 @@
 #include "config.h"
 
 extern int logMode;
+static String datasetLabel = "UNLABELED";
 
 inline void handleSerialCommands()
 {
@@ -16,18 +17,23 @@ inline void handleSerialCommands()
             logMode = LOG_DEBUG;
             Serial.println("Switched to DEBUG mode");
         }
-
         else if(cmd == 'i')
         {
             logMode = LOG_INFO;
             Serial.println("Switched to INFO mode");
         }
-
         else if(cmd == 'c')
         {
             logMode = LOG_DATASET;
-            Serial.println("Switched to DATASET mode");
+            datasetLabel = "UNLABELED";
+            Serial.println("time_ms,vib_rms,vib_mean,vib_std,current_rms,current_mean,current_std,rpm,temp_C,status");
         }
+        else if (cmd >= '0' && cmd <= '4')
+        {
+            const char *labels[] = {"NORMAL", "OVERCURRENT", "OVERHEAT", "STOPPED", "UNBALANCE"};
+            datasetLabel = labels[cmd - '0'];
+        }
+        else if (cmd == 'u') datasetLabel = "UNLABELED";
     }
 }
 
@@ -44,7 +50,6 @@ inline void logDebug(
     float motorHealth,
     String fault)
 {
-
     Serial.println("\n====== DEBUG ======");
 
     Serial.print("VibRMS: "); Serial.println(vibRMS);
@@ -59,6 +64,7 @@ inline void logDebug(
     Serial.print("Temp: "); Serial.println(temp);
 
     Serial.print("AI Class: "); Serial.println(aiClass);
+    Serial.print("Confirmation count: "); Serial.println(abnormalCount);
 
     Serial.print("Status: "); Serial.println(fault);
 
@@ -87,10 +93,10 @@ inline void logInfo(float rpm, float temp, float health, String fault)
 
 inline void logDataset(
     unsigned long time,
-    float features[8],
-    int aiPrediction,
-    String fault)
+    float features[8])
 {
+    for (int i = 0; i < 8; ++i)
+        if (!isfinite(features[i])) return; // Invalid windows are never training rows.
 
     Serial.print(time); Serial.print(",");
 
@@ -103,8 +109,7 @@ inline void logDataset(
     Serial.print(features[6]); Serial.print(",");
     Serial.print(features[7]); Serial.print(",");
 
-    Serial.print(aiPrediction); Serial.print(",");
-    Serial.println(fault);
+    Serial.println(datasetLabel); // Ground truth selected by operator, not model output.
 }
 
 inline void runLogger(
@@ -121,7 +126,6 @@ inline void runLogger(
     float features[8],
     String fault)
 {
-
     handleSerialCommands();
 
     if(logMode == LOG_DEBUG)
@@ -140,15 +144,13 @@ inline void runLogger(
             fault
         );
     }
-
     else if(logMode == LOG_INFO)
     {
         logInfo(rpm, temp, motorHealth, fault);
     }
-
     else if(logMode == LOG_DATASET)
     {
-        logDataset(millis(), features, aiPrediction, fault);
+        logDataset(millis(), features);
     }
 }
 

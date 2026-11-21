@@ -18,7 +18,6 @@ inline bool checkWarningState(float motorHealth)
 
 inline void updateAlerts(String fault, bool warningState)
 {
-
     if(fault == "STOPPED")
     {
         digitalWrite(LED_NORMAL, LOW);
@@ -31,7 +30,6 @@ inline void updateAlerts(String fault, bool warningState)
         faultLED = 0;
         buzzer = 0;
     }
-
     else if(fault != "NORMAL")
     {
         digitalWrite(LED_NORMAL, LOW);
@@ -44,7 +42,6 @@ inline void updateAlerts(String fault, bool warningState)
         faultLED = 1;
         buzzer = 1;
     }
-
     else if(warningState)
     {
         digitalWrite(LED_NORMAL, LOW);
@@ -57,7 +54,6 @@ inline void updateAlerts(String fault, bool warningState)
         faultLED = 0;
         buzzer = 0;
     }
-
     else
     {
         digitalWrite(LED_NORMAL, HIGH);

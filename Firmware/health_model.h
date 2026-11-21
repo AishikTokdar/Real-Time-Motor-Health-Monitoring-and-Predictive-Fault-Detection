@@ -2,6 +2,7 @@
 #define HEALTH_MODEL_H
 
 #include "config.h"
+#include <math.h>
 
 extern float previousHealth;
 
@@ -10,6 +11,9 @@ inline float computeMotorHealth(
     float currentRMS,
     float temperature)
 {
+    if (!isfinite(vibStdDev) || !isfinite(currentRMS) || !isfinite(temperature) ||
+        vibStdDev < 0 || currentRMS < 0 || temperature < -55 || temperature > 125)
+        return -1;
 
     float vibRatio = (VIBRATION_THRESHOLD > 0) ? (vibStdDev / VIBRATION_THRESHOLD) : 0;
     float currentRatio = (CURRENT_THRESHOLD > 0) ? (currentRMS / CURRENT_THRESHOLD) : 0;
@@ -29,37 +33,37 @@ inline float computeMotorHealth(
         tempStress = (tempRatio - 0.7) * 20;
 
     float rawHealth = 100 - (vibStress + currentStress + tempStress);
-
     float filteredHealth = 0.3 * rawHealth + 0.7 * previousHealth;
-
-    previousHealth = filteredHealth;
 
     if(filteredHealth > 100) filteredHealth = 100;
     if(filteredHealth < 0) filteredHealth = 0;
+    previousHealth = filteredHealth;
 
     return filteredHealth;
 }
 
-inline int estimateRUL(float motorHealth)
+// Rescaled condition indicator; does not predict remaining operating time.
+inline int computeMaintenanceScore(float motorHealth)
 {
-    int RUL = motorHealth * 1.2;
+    if (!isfinite(motorHealth) || motorHealth < 0) return -1;
+    int maintenanceScore = 1.25f * (motorHealth - 20);
 
-    if(RUL > 100)
-        RUL = 100;
-    if(RUL < 0)
-        RUL = 0;
+    if(maintenanceScore > 100)
+        maintenanceScore = 100;
+    if(maintenanceScore < 0)
+        maintenanceScore = 0;
 
-    return RUL;
+    return maintenanceScore;
 }
 
-inline String maintenanceAdvice(int RUL)
+inline String maintenanceAdvice(int maintenanceScore)
 {
-    if (RUL > 80)
+    if (maintenanceScore < 0)
+        return "Sensor check required";
+    if (maintenanceScore > 80)
         return "Healthy";
-
-    else if (RUL > 50)
+    else if (maintenanceScore > 30)
         return "Service Soon";
-
     else
         return "Immediate Maintenance Required";
 }

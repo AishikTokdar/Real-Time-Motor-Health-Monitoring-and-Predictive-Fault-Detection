@@ -28,13 +28,24 @@
 #define LOG_INFO    2
 #define LOG_DATASET 3
 
-#define WIFI_SSID "POCO C65"
-#define WIFI_PASS "12202006"
-
-#define BLYNK_TEMPLATE_ID "TMPL322mbuW0v"
+#if __has_include("secrets.h")
+#include "secrets.h"
+#endif
+#ifndef WIFI_SSID
+#define WIFI_SSID ""
+#endif
+#ifndef WIFI_PASS
+#define WIFI_PASS ""
+#endif
+#ifndef BLYNK_TEMPLATE_ID
+#define BLYNK_TEMPLATE_ID ""
+#endif
+#ifndef BLYNK_TEMPLATE_NAME
 #define BLYNK_TEMPLATE_NAME "Motor Health Monitoring"
-
-#define BLYNK_AUTH_TOKEN "VbxTljZqaT62lplxVUMRFzPgEYrbAH2H"
+#endif
+#ifndef BLYNK_AUTH_TOKEN
+#define BLYNK_AUTH_TOKEN ""
+#endif
 
 #define RPM_MIN_VALID 100
 #define RPM_MAX_VALID 3000
@@ -46,5 +57,15 @@
 
 #define VIBRATION_SAMPLES 150
 #define CURRENT_SAMPLES 500
+
+// Magnitude features retain gravity, matching the recorded training data.
+#define VIBRATION_SAMPLE_INTERVAL_MS 10
+#define RPM_INTERVAL_MS 1000
+#define RPM_PULSES_PER_REVOLUTION 1
+#define TEMPERATURE_CONVERSION_MS 750
+#define LCD_HEARTBEAT_MS 2000
+#define WIFI_RETRY_MS 10000
+#define CLOUD_RETRY_MS 10000
+#define CLOUD_CONNECT_TIMEOUT_MS 3000
 
 #endif
