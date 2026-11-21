@@ -16,9 +16,11 @@ __pycache__/
 .ipynb_checkpoints/
 .pytest_cache/
 venv/
+.venv/
 env/
 ENV/
 .env
+secrets.h
 
 # IDE and Editor configurations
 .vscode/
